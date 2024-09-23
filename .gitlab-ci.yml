@@ -1,0 +1,24 @@
+stages:
+  - deploy
+before_script:
+  - echo "Starting deployment stage..."
+deploy:
+  stage: deploy
+  image:
+    name: amazon/aws-cli
+    entrypoint: [""]
+  only:
+    - merge_requests
+    - /^prod-master$/
+  script:
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws s3 sync $CI_PROJECT_DIR/ s3path
+  artifacts:
+    paths:
+      - artifact_test.txt
+    expire_in: 1 week
+  tags:
+    - data-engg
+after_script:
+  - echo "Deployment stage finished."
